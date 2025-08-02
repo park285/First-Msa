@@ -1,0 +1,111 @@
+/* Import Google Fonts & Custom Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+@import url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/ONE-Mobile-POP.css');
+
+:root {
+    /* Light Theme Colors */
+    --primary-color: #28a745; /* Green */
+    --primary-hover: #218838;
+    --primary-color-rgb: 40, 167, 69;
+    
+    --secondary-color: #6c757d; /* Gray */
+    
+    --background-color: #f8f9fa;
+    --card-background: #ffffff;
+    
+    --border-color: #dee2e6;
+    --light-border-color: #e9ecef;
+    --lighter-background: #f1f3f5;
+
+    /* Status Colors */
+    --error-color: #dc3545;
+    --warning-color: #ffc107;
+    --success-color: #28a745;
+    --info-color: #17a2b8;
+    
+    /* Additional UI Colors */
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+    
+    /* Exercise specific colors */
+    --exercise-bg: #e9f5ec;
+    --exercise-border: #d4edda;
+    --exercise-text: #155724;
+
+    /* Text Colors */
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --text-muted: #868e96;
+
+    /* Layout */
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    --border-radius: 0.75rem;
+    --transition: 0.2s ease-in-out;
+}
+
+[data-theme='dark'] {
+    --primary-color: rgb(255, 255, 255);
+    --primary-hover: rgba(255, 255, 255, 0.8);
+    --primary-color-rgb: 255, 255, 255;
+
+    --secondary-color: rgb(180, 180, 180);
+
+    --background-color: rgb(30, 30, 30);
+    --card-background: rgb(40, 40, 40);
+
+    --border-color: rgb(60, 60, 60);
+    --light-border-color: rgb(50, 50, 50);
+    --lighter-background: rgb(35, 35, 35);
+    
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+
+    /* Text Colors */
+    --text-primary: rgb(255, 255, 255);
+    --text-secondary: rgb(180, 180, 180);
+    --text-muted: rgb(120, 120, 120);
+    
+    /* Additional UI Colors for dark theme */
+    --gray-50: #374151;
+    --gray-100: #4b5563;
+    --gray-200: #6b7280;
+    --gray-300: #9ca3af;
+    --gray-400: #d1d5db;
+    --gray-500: #e5e7eb;
+    --gray-600: #f3f4f6;
+    --gray-700: #f9fafb;
+    --gray-800: #ffffff;
+    --gray-900: #ffffff;
+    
+    /* Exercise specific colors for dark theme */
+    --exercise-bg: #064e3b;
+    --exercise-border: #047857;
+    --exercise-text: #34d399;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: 'ONE-Mobile-POP', sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    min-height: 100vh;
+}
+
+#root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}

@@ -1,0 +1,142 @@
+# Caddy Configuration for Diet Diary MSA
+# Automatic HTTPS for all services.
+
+{
+    email admin@capu.blog
+    # acme_ca https://acme-staging-v02.api.letsencrypt.org/directory # Staging disabled for production cert.
+}
+
+# Production HTTPS
+{$DOMAIN} {
+    
+    # CORS preflight
+    @options method OPTIONS
+    handle @options {
+        header "Access-Control-Allow-Origin" "https://{$DOMAIN}"
+        header "Access-Control-Allow-Methods" "GET, POST, PUT, DELETE, OPTIONS"
+        header "Access-Control-Allow-Headers" "*"
+        header "Access-Control-Allow-Credentials" "true"
+        respond 204
+    }
+
+    # WebSocket for React HMR
+    handle /ws {
+        reverse_proxy frontend:3000 {
+            header_up Upgrade {http.request.header.Upgrade}
+            header_up Connection {http.request.header.Connection}
+        }
+    }
+    
+    # API gateway and WebSockets
+    @websockets header Connection* Upgrade
+    handle /api/* {
+        header "Access-Control-Allow-Origin" "https://{$DOMAIN}"
+        header "Access-Control-Allow-Methods" "GET, POST, PUT, DELETE, OPTIONS"
+        header "Access-Control-Allow-Headers" "*"
+        header "Access-Control-Allow-Credentials" "true"
+
+        reverse_proxy @websockets gateway1:8080 gateway2:8080 {
+            lb_policy ip_hash
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+            header_up Upgrade {http.request.header.Upgrade}
+            header_up Connection {http.request.header.Connection}
+        }
+        
+        reverse_proxy gateway1:8080 gateway2:8080 {
+            lb_policy ip_hash
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+    
+    # Frontend
+    reverse_proxy /* frontend:3000
+    
+    # Health check
+    respond /health 200 {
+        body "OK"
+    }
+    
+    # Security headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Frame-Options "DENY"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+    
+    # Logging
+    log {
+        output stdout
+        format console
+    }
+    
+    # Compression
+    encode gzip
+}
+
+# Redirect HTTP to HTTPS
+http://{$DOMAIN} {
+    redir https://{host}{uri}
+}
+
+# Localhost fallback for development
+:80 {
+    # CORS preflight
+    @options method OPTIONS
+    handle @options {
+        header "Access-Control-Allow-Origin" "http://localhost:3000"
+        header "Access-Control-Allow-Methods" "GET, POST, PUT, DELETE, OPTIONS"
+        header "Access-Control-Allow-Headers" "*"
+        header "Access-Control-Allow-Credentials" "true"
+        respond 204
+    }
+
+    # WebSocket for React HMR
+    handle /ws {
+        reverse_proxy frontend:3000 {
+            header_up Upgrade {http.request.header.Upgrade}
+            header_up Connection {http.request.header.Connection}
+        }
+    }
+    
+    # API gateway and WebSockets
+    @websockets header Connection* Upgrade
+    handle /api/* {
+        header "Access-Control-Allow-Origin" "http://localhost:3000"
+        header "Access-Control-Allow-Methods" "GET, POST, PUT, DELETE, OPTIONS"
+        header "Access-Control-Allow-Headers" "*"
+        header "Access-Control-Allow-Credentials" "true"
+
+        reverse_proxy @websockets gateway1:8080 gateway2:8080 {
+            lb_policy ip_hash
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+            header_up Upgrade {http.request.header.Upgrade}
+            header_up Connection {http.request.header.Connection}
+        }
+        
+        reverse_proxy gateway1:8080 gateway2:8080 {
+            lb_policy ip_hash
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+    
+    # Frontend
+    reverse_proxy /* frontend:3000
+    
+    # Health check
+    respond /health 200 {
+        body "OK"
+    }
+}

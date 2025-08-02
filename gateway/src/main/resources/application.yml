@@ -1,0 +1,117 @@
+server:
+  port: 8080
+  forward-headers-strategy: framework
+
+# JWT Settings
+jwt:
+  secret: ${JWT_SECRET}
+
+spring:
+  application:
+    name: gateway-service
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+  cloud:
+    gateway:
+      x-forwarded:
+        enabled: true
+        for-enabled: true
+        for-append: true
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:3000"
+              - "http://localhost"
+              - "http://172.30.1.67"
+              - "http://capu.blog"
+              - "https://capu.blog"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+      routes:
+        - id: auth-service-public
+          uri: http://auth-service:8080
+          predicates:
+            - Path=/api/auth/login,/api/auth/register,/api/auth/refresh,/api/auth/logout
+          filters:
+            - StripPrefix=2
+          order: 0
+
+        - id: auth-service-websocket
+          uri: ws://auth-service:8080
+          predicates:
+            - Path=/api/auth/ws
+          filters:
+            - StripPrefix=2
+          order: 1
+
+        - id: auth-service-protected
+          uri: http://auth-service:8080
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - StripPrefix=2
+            - AuthenticationFilter
+          order: 2
+
+        - id: diary-service
+          uri: ${DIARY_SERVICE_URL:http://diary-service:8081}
+          predicates:
+            - Path=/api/diary/**
+          filters:
+            - StripPrefix=2
+            - AuthenticationFilter
+          order: 2
+
+        - id: analysis-service
+          uri: ${ANALYSIS_SERVICE_URL:http://analysis-service:8082}
+          predicates:
+            - Path=/api/analysis/**
+          filters:
+            - StripPrefix=2
+            - AuthenticationFilter
+          order: 2
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,gateway
+  endpoint:
+    gateway:
+      enabled: true
+    health:
+      show-details: always
+
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
+    org.springframework.cloud.gateway.route: TRACE
+    org.springframework.cloud.gateway.handler: TRACE
+    org.springframework.web.reactive: TRACE
+    reactor.netty.http.client: TRACE
+    reactor.netty.http.server: TRACE
+    com.dietdiary: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Custom properties
+app:
+  service:
+    api-key: ${SERVICE_API_KEY}

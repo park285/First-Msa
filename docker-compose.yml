@@ -1,0 +1,210 @@
+services:
+  haproxy:
+    image: haproxy:3.2-alpine
+    container_name: haproxy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      - caddy1
+      - caddy2
+
+  caddy1:
+    image: caddy:2.10-alpine
+    container_name: caddy1
+    restart: always
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      - DOMAIN=${DOMAIN}
+    depends_on:
+      - gateway1
+      - gateway2
+      - frontend
+
+  caddy2:
+    image: caddy:2.10-alpine
+    container_name: caddy2
+    restart: always
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      - DOMAIN=${DOMAIN}
+    depends_on:
+      - gateway1
+      - gateway2
+      - frontend
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    restart: always
+    environment:
+      - WDS_SOCKET_PORT=0
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+  gateway1:
+    build: ./gateway
+    container_name: gateway1
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - AUTH_SERVICE_URL=http://auth-service:8080
+      - DIARY_SERVICE_URL=http://diary-service:8081
+      - ANALYSIS_SERVICE_URL=http://analysis-service:8082
+      - SERVICE_API_KEY=${SERVICE_API_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - auth-service
+      - diary-service
+      - analysis-service
+
+  gateway2:
+    build: ./gateway
+    container_name: gateway2
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - AUTH_SERVICE_URL=http://auth-service:8080
+      - DIARY_SERVICE_URL=http://diary-service:8081
+      - ANALYSIS_SERVICE_URL=http://analysis-service:8082
+      - SERVICE_API_KEY=${SERVICE_API_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - auth-service
+      - diary-service
+      - analysis-service
+
+  auth-service:
+    build: ./services/auth-service-spring
+    container_name: auth-service
+    restart: always
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=diet_diary
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - SERVICE_API_KEY=${SERVICE_API_KEY}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - COOKIE_SALT=${COOKIE_SALT}
+    mem_limit: 1g
+    depends_on:
+      - postgres
+      - redis
+
+  diary-service:
+    build: ./services/diary-service-spring
+    container_name: diary-service
+    restart: always
+    ports:
+      - "8081:8081"
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=diet_diary
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - SERVICE_API_KEY=${SERVICE_API_KEY}
+    depends_on:
+      - postgres
+
+  analysis-service:
+    build: ./services/analysis-service-spring
+    container_name: analysis-service
+    restart: always
+    ports:
+      - "8082:8082"
+    env_file:
+      - .env
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - SERVICE_API_KEY=${SERVICE_API_KEY}
+    depends_on:
+      - diary-service
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: postgres
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_DB=diet_diary
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
+
+  redis:
+    image: redis:8-alpine
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: always
+    ports:
+      - "9000:9000"
+      - "9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - TZ=Asia/Seoul
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_POLL_INTERVAL=3600
+      - WATCHTOWER_INCLUDE_STOPPED=true
+      - WATCHTOWER_REVIVE_STOPPED=false
+      - WATCHTOWER_DEBUG=true
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
+
+volumes:
+  caddy_data:
+  caddy_config:
+  postgres_data:
+  redis_data:
+  portainer_data:

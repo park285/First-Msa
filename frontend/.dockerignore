@@ -1,0 +1,10 @@
+# 로컬 의존성 폴더
+node_modules
+
+# 빌드 결과물
+build
+dist
+
+# 기타
+.env
+npm-debug.log

@@ -1,0 +1,428 @@
+.admin-dashboard {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.admin-dashboard h1 {
+    color: var(--text-primary);
+    border-bottom: 3px solid var(--error-color);
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+}
+
+.admin-dashboard h2 {
+    color: var(--text-primary);
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.4em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-dashboard h3 {
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    font-size: 1.1em;
+    margin-top: 0;
+}
+
+/* Grid Layout */
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.grid-span-2 {
+    grid-column: span 2;
+}
+
+/* Section Header */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.section-header h2 {
+    margin: 0;
+}
+
+.section-header .btn-secondary {
+    padding: 5px 10px;
+    font-size: 0.8em;
+}
+
+/* 섹션 공통 스타일 */
+.user-management-section,
+.token-management-section,
+.session-stats-section,
+.force-logout-history-section {
+    margin-top: 20px;
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+}
+
+/* 사용자 관리 테이블 */
+.user-table-container {
+    overflow-x: auto;
+    max-height: 600px;
+}
+
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9em;
+}
+
+.user-table th,
+.user-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.user-table thead th {
+    background-color: var(--background-color);
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.user-table tbody tr:hover {
+    background-color: var(--lighter-background);
+}
+
+.user-table td {
+    color: var(--text-primary);
+}
+
+.user-table .action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.user-table .btn-danger, .user-table .btn-secondary {
+    padding: 5px 10px;
+    font-size: 0.8em;
+}
+
+/* 폼 그룹 */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.form-group textarea {
+    flex: 1;
+    padding: 10px;
+    border: 2px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+    resize: vertical;
+    min-height: 80px;
+    font-family: monospace;
+    font-size: 12px;
+    background-color: var(--background-color);
+    color: var(--text-primary);
+}
+
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--warning-color);
+}
+
+/* 버튼 스타일 (Admin 전용) */
+.btn-primary,
+.btn-secondary,
+.btn-danger,
+.btn-warning {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+    color: white;
+}
+
+.btn-primary { background: var(--primary-color); }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-secondary { background: var(--secondary-color); }
+.btn-secondary:hover { background: var(--gray-600); }
+.btn-danger { background: var(--error-color); }
+.btn-danger:hover { background: #c82333; }
+.btn-warning { background: var(--warning-color); }
+.btn-warning:hover { background: #e0a800; }
+
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-danger:disabled,
+.btn-warning:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* 통계 표시 */
+.stats-display {
+    background: var(--lighter-background);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.stat-item {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+}
+
+.stat-item:last-child {
+    border-bottom: none;
+}
+
+.stat-item strong {
+    color: var(--text-primary);
+    margin-right: 10px;
+}
+
+.stats-display small {
+    display: block;
+    margin-top: 10px;
+    color: var(--text-secondary);
+    font-size: 0.8em;
+}
+
+/* 토큰 블랙리스트 섹션 */
+.blacklist-token {
+    background: var(--exercise-bg);
+    border: 1px solid var(--exercise-border);
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.blacklist-token h3 {
+    color: var(--exercise-text);
+}
+
+/* Tooltip */
+.tooltip-container {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.info-icon {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: var(--secondary-color);
+    color: white;
+    text-align: center;
+    font-size: 12px;
+    line-height: 18px;
+    cursor: help;
+}
+
+.tooltip-text {
+    visibility: hidden;
+    width: 250px;
+    background-color: #333;
+    color: #fff;
+    text-align: left;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -125px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.8rem;
+    font-weight: 400;
+}
+
+.tooltip-container:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Modal */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: var(--card-background);
+    padding: 30px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 700px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.session-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.session-list li {
+    background: var(--lighter-background);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.session-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex-grow: 1;
+    word-break: break-all;
+}
+
+.session-info input {
+    font-family: monospace;
+    font-size: 0.8em;
+    padding: 5px;
+    border: 1px solid var(--border-color);
+    background: var(--background-color);
+    color: var(--text-primary);
+    border-radius: 4px;
+}
+
+.session-info span {
+    font-size: 0.8em;
+    color: var(--text-secondary);
+}
+
+/* 강제 로그아웃 히스토리 테이블 */
+.history-table-container {
+    overflow-x: auto;
+    max-height: 400px;
+    margin-top: 15px;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9em;
+}
+
+.history-table th,
+.history-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: top;
+}
+
+.history-table thead th {
+    background-color: var(--background-color);
+    font-weight: 600;
+    color: var(--text-secondary);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.history-table tbody tr:hover {
+    background-color: var(--lighter-background);
+}
+
+.history-table td {
+    color: var(--text-primary);
+}
+
+.user-info,
+.admin-info {
+    line-height: 1.4;
+}
+
+.user-info strong,
+.admin-info strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.user-info small,
+.admin-info small {
+    color: var(--text-secondary);
+    font-size: 0.8em;
+}
+
+.user-id,
+.admin-id {
+    color: var(--secondary-color) !important;
+    font-weight: 500;
+}
+
+.system-action {
+    color: var(--warning-color);
+    font-style: italic;
+    font-weight: 500;
+}
+
+
+/* 반응형 디자인 */
+@media (max-width: 1200px) {
+    .admin-grid {
+        grid-template-columns: 1fr;
+    }
+    .grid-span-2 {
+        grid-column: span 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-dashboard {
+        padding: 15px;
+    }
+    .session-list li {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .history-table th,
+    .history-table td {
+        padding: 8px 10px;
+        font-size: 0.8em;
+    }
+    
+    .user-info,
+    .admin-info {
+        font-size: 0.9em;
+    }
+}
